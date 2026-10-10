@@ -1,7 +1,7 @@
 # Renewable Asset Fault & Anomaly Detection Copilot
 
 Flags abnormal behaviour in solar-inverter and wind-turbine telemetry, explains it in operator language, ranks likely causes, and recommends next checks. Python/FastAPI backend, single-file HTML dashboard.
-LIVE URL :web-production-c8269.up.railway.app
+Live Url : https://web-production-c8269.up.railway.app/
 
 ## Run locally
 ```bash
