@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Asset Anomaly Copilot</title>
+<style>
+:root{--bg:#f4f7f5;--card:#fff;--ink:#14231c;--mut:#5d6b64;--line:#e1e8e4;--brand:#12372a;--ok:#2f8f5b;
+--watch:#b7860b;--warn:#d9731a;--crit:#c62f2f;--actual:#1d4ed8;--exp:#8b9a92;--flag:rgba(198,47,47,.14)}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1512;--card:#16201b;--ink:#e6efe9;--mut:#93a39a;--line:#26342d;--brand:#0b2a1f;--actual:#6ea0ff;--exp:#6c7c73;--flag:rgba(255,99,99,.2)}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--brand);color:#fff;padding:22px 16px}header h1{margin:0;font-size:22px}header p{margin:4px 0 0;opacity:.8;font-size:14px}
+main{max-width:1180px;margin:0 auto;padding:16px}
+.grid{display:grid;gap:16px;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.card h2{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}.kpi b{display:block;font-size:26px}.kpi span{color:var(--mut);font-size:13px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit}
+.tab[aria-selected=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
+.sev{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;color:#fff}
+.sev.critical{background:var(--crit)}.sev.warning{background:var(--warn)}.sev.watch{background:var(--watch)}.sev.healthy{background:var(--ok)}
+.chart h3{margin:10px 0 2px;font-size:14px}.chart svg{width:100%;height:auto;display:block}
+.legend{font-size:12px;color:var(--mut)}.legend i{display:inline-block;width:14px;height:3px;margin:0 4px 2px 10px;vertical-align:middle}
+.ev{border:1px solid var(--line);border-left:5px solid var(--crit);border-radius:10px;padding:12px;margin-bottom:12px}
+.ev.warning{border-left-color:var(--warn)}.ev.watch{border-left-color:var(--watch)}
+.ev p{margin:8px 0}.ev ol{margin:6px 0 0;padding-left:20px}.ev small{color:var(--mut)}
+.hyp{display:flex;align-items:center;gap:8px;font-size:13px;margin:3px 0}.bar{flex:0 0 90px;height:6px;background:var(--line);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--brand)}
+@media(prefers-color-scheme:dark){.bar i{background:#4aa87c}}
+button.act,label.act{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;font:inherit;display:inline-block}
+.chat{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;white-space:pre-wrap;font-size:14px;background:var(--bg)}
+.chat .u{color:var(--actual);font-weight:600}.chat div{margin-bottom:8px}
+.row{display:flex;gap:8px}.row input{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:3px 10px;cursor:pointer;font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:right;padding:4px 8px;border-bottom:1px solid var(--line)}th:first-child,td:first-child{text-align:left}
+.mut{color:var(--mut)}.err{color:var(--crit)}
+</style>
+</head>
+<body>
+<header><h1>Renewable Asset Anomaly Copilot</h1>
+<p>Flags abnormal solar / wind behaviour, explains it in operator language, and suggests what to check next.</p></header>
+<main>
+  <div class="kpis" id="kpis"></div>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="grid">
+    <div>
+      <div class="card chart" id="charts"><h2>Telemetry vs expected behaviour</h2><p class="mut">Loading…</p></div>
+      <div class="card" id="evalcard"><h2>Validation (fault-injection benchmark)</h2><p class="mut">Loading…</p></div>
+    </div>
+    <div>
+      <div class="card"><h2>Detected events</h2><div id="events"><p class="mut">Loading…</p></div></div>
+      <div class="card"><h2>Ask the copilot</h2>
+        <div class="chips" id="chips"></div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+        <form class="row" id="askform"><input id="q" placeholder="e.g. why did the turbine alarm?" aria-label="Question"><button class="act">Ask</button></form>
+      </div>
+      <div class="card"><h2>Analyse your own CSV</h2>
+        <p class="mut" style="margin-top:0">Same columns as the bundled data (timestamp_id, asset_id, hour, irradiance_wm2, wind_speed_ms, temperature_c, vibration_mm_s, power_mw). Nothing is stored.</p>
+        <label class="act">Choose file<input type="file" id="file" accept=".csv" hidden></label>
+        <button class="act" id="reset" style="display:none">Back to bundled data</button>
+        <div id="uperr" class="err"></div>
+      </div>
+    </div>
+  </div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S={assets:{},events:[],series:{},cur:null,custom:false};
+
+async function api(path,opt){const r=await fetch(path,opt);if(!r.ok){let m=r.statusText;try{m=(await r.json()).detail||m}catch(e){}throw new Error(m)}return r.json()}
+
+async function loadBundled(){
+  const o=await api('/api/overview');S.assets=o.assets;S.events=o.events;S.series={};S.custom=false;
+  S.cur=Object.keys(S.assets)[0];await ensureSeries(S.cur);render();
+}
+async function ensureSeries(a){if(!S.series[a]&&!S.custom)S.series[a]=(await api('/api/assets/'+encodeURIComponent(a))).series}
+
+function render(){
+  const ev=S.events,n=Object.keys(S.assets).length,crit=ev.filter(e=>e.severity==='critical').length;
+  const pts=Object.values(S.assets).reduce((a,x)=>a+x.flagged_points,0),rows=Object.values(S.assets).reduce((a,x)=>a+x.rows,0);
+  $('#kpis').innerHTML=[[n,'assets monitored'],[ev.length,'events detected'],[crit,'critical'],[(100*pts/rows).toFixed(1)+'%','hours flagged']]
+    .map(([b,s])=>`<div class="kpi"><b>${esc(b)}</b><span>${s}</span></div>`).join('');
+  $('#tabs').innerHTML=Object.entries(S.assets).map(([a,s])=>
+    `<button class="tab" role="tab" aria-selected="${a===S.cur}" data-a="${esc(a)}">${esc(a)} <span class="sev ${s.worst}">${s.worst}</span></button>`).join('');
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=async()=>{S.cur=b.dataset.a;await ensureSeries(S.cur);render()});
+  drawCharts();drawEvents();
+}
+
+function chart(title,rows,series,opts){
+  const W=760,H=170,L=44,R=10,T=8,B=22,n=rows.length;
+  const all=series.flatMap(s=>rows.map(r=>r[s.k])).concat(opts.extra||[]);
+  let lo=Math.min(...all),hi=Math.max(...all);const pad=(hi-lo)*.08||1;lo-=pad;hi+=pad;
+  const x=i=>L+(W-L-R)*i/(n-1),y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  let g='';
+  // flagged shading
+  rows.forEach((r,i)=>{if(r.anomaly)g+=`<rect x="${x(i)-(W-L-R)/(n-1)/2}" y="${T}" width="${(W-L-R)/(n-1)}" height="${H-T-B}" fill="var(--flag)"/>`});
+  for(let k=0;k<=4;k++){const v=lo+(hi-lo)*k/4;g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" font-size="11" text-anchor="end" fill="var(--mut)">${v.toFixed(opts.d??1)}</text>`}
+  for(let d=0;d*24<n;d++){const i=d*24;g+=`<line x1="${x(i)}" x2="${x(i)}" y1="${T}" y2="${H-B}" stroke="var(--line)" stroke-dasharray="3 3"/><text x="${x(i)+3}" y="${H-6}" font-size="11" fill="var(--mut)">Day ${d+1}</text>`}
+  if(opts.thr!=null)g+=`<line x1="${L}" x2="${W-R}" y1="${y(opts.thr)}" y2="${y(opts.thr)}" stroke="var(--crit)" stroke-dasharray="5 4"/><text x="${W-R}" y="${y(opts.thr)-4}" font-size="11" text-anchor="end" fill="var(--crit)">${esc(opts.thrLabel)}</text>`;
+  series.forEach(s=>{g+=`<polyline fill="none" stroke="${s.c}" stroke-width="${s.w||2}" ${s.dash?'stroke-dasharray="5 4"':''} points="${rows.map((r,i)=>x(i)+','+y(r[s.k])).join(' ')}"/>`});
+  rows.forEach((r,i)=>{if(r.anomaly)g+=`<circle cx="${x(i)}" cy="${y(r[series[0].k])}" r="4" fill="var(--crit)"><title>Day ${Math.floor(i/24)+1} ${String(r.hour).padStart(2,'0')}:00 - ${esc(opts.unit)} ${r[series[0].k]}</title></circle>`});
+  const lg=series.map(s=>`<i style="background:${s.c}"></i>${esc(s.n)}`).join('');
+  return `<h3>${esc(title)}</h3><div class="legend">${lg}<i style="background:var(--crit)"></i>flagged hour</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}">${g}</svg>`;
+}
+function drawCharts(){
+  const rows=S.series[S.cur];if(!rows)return;
+  $('#charts').innerHTML='<h2>Telemetry vs expected behaviour</h2>'+
+    chart('Power (MW): actual vs expected from irradiance / wind speed',rows,[{k:'power_mw',n:'actual',c:'var(--actual)'},{k:'expected_power_mw',n:'expected',c:'var(--exp)',dash:1,w:1.6}],{d:2,unit:'MW'})+
+    chart('Temperature (°C): actual vs normal for that hour of day',rows,[{k:'temperature_c',n:'actual',c:'var(--actual)'},{k:'expected_temp_c',n:'expected',c:'var(--exp)',dash:1,w:1.6}],{unit:'°C'})+
+    chart('Vibration (mm/s)',rows,[{k:'vibration_mm_s',n:'actual',c:'var(--actual)'}],{unit:'mm/s',thr:2.5,thrLabel:'warning 2.5 mm/s',extra:[2.5]});
+}
+function drawEvents(){
+  const evs=S.events;
+  if(!evs.length){$('#events').innerHTML='<p>No anomalies detected. All assets look healthy.</p>';return}
+  $('#events').innerHTML=evs.map(e=>`<div class="ev ${e.severity}">
+    <b>${esc(e.event_id)}</b> <span class="sev ${e.severity}">${e.severity}</span>
+    <small> · Day ${e.day}, ${String(e.start_hour).padStart(2,'0')}:00 · ${e.duration_h} h · peak z=${e.peak_abs_z}</small>
+    <p>${esc(e.explanation)}</p>
+    <b>Likely causes (ranked)</b>
+    ${e.hypotheses.map(h=>`<div class="hyp"><div class="bar"><i style="width:${h.match*100}%"></i></div><span>${esc(h.title)} <small>${Math.round(h.match*100)}%</small></span></div>`).join('')}
+    <p style="margin-bottom:2px"><b>Recommended next checks</b></p><ol>${e.recommended_checks.map(c=>`<li>${esc(c)}</li>`).join('')}</ol>
+    <small>Detected by: ${[e.detectors.rules&&'statistical rules',e.detectors.isolation_forest&&'IsolationForest'].filter(Boolean).join(' + ')}</small></div>`).join('');
+}
+
+// ---------- copilot ----------
+const chips=['Give me a status summary','Why did the turbine alarm?','What should I check first?','Anything wrong with the solar inverter?'];
+$('#chips').innerHTML=chips.map(c=>`<button type="button">${esc(c)}</button>`).join('');
+document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>{$('#q').value=b.textContent;$('#askform').requestSubmit()});
+function say(cls,t){const d=document.createElement('div');if(cls)d.className=cls;d.textContent=t;$('#chat').append(d);$('#chat').scrollTop=1e9}
+$('#askform').onsubmit=async ev=>{ev.preventDefault();const t=$('#q').value.trim();if(!t)return;$('#q').value='';say('u','You: '+t);
+  if(S.custom){say('','Copilot Q&A is available for the bundled data only; the event cards on the right cover your upload.');return}
+  try{const r=await api('/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:t})});say('',r.answer)}catch(e){say('err',e.message)}};
+
+// ---------- upload ----------
+$('#file').onchange=async e=>{const f=e.target.files[0];if(!f)return;$('#uperr').textContent='';
+  const fd=new FormData();fd.append('file',f);
+  try{const r=await api('/api/analyze',{method:'POST',body:fd});S.assets=r.assets;S.events=r.events;S.series=r.series;S.custom=true;S.cur=Object.keys(r.assets)[0];$('#reset').style.display='inline-block';render()}
+  catch(err){$('#uperr').textContent=err.message}e.target.value=''};
+$('#reset').onclick=()=>{$('#reset').style.display='none';loadBundled()};
+
+// ---------- evaluation ----------
+async function loadEval(){
+  try{const r=await api('/api/evaluation');
+    const b=r.by_severity.map(x=>{const m=x.methods;const row=k=>`<td>${m[k].precision.toFixed(2)}</td><td>${m[k].recall.toFixed(2)}</td><td>${m[k].f1.toFixed(2)}</td><td>${m[k].false_alarms_per_1000h}</td>`;
+      return `<tr><td colspan="5"><b>Fault severity ${x.severity}</b> <span class="mut">(1.0 = size of the bundled-data faults)</span></td></tr>`+
+      ['rules','isolation_forest','ensemble'].map(k=>`<tr><td>${k.replace('_',' ')}</td>${row(k)}</tr>`).join('')}).join('');
+    $('#evalcard').innerHTML=`<h2>Validation (fault-injection benchmark)</h2><p class="mut" style="margin-top:0">${esc(r.note)}</p>
+    <table><tr><th>method</th><th>precision</th><th>recall</th><th>F1</th><th>false alarms / 1000 h</th></tr>${b}</table>`;
+  }catch(e){$('#evalcard').innerHTML='<h2>Validation</h2><p class="mut">Run <code>python -m backend.evaluation</code> to generate results.</p>'}
+}
+loadBundled().catch(e=>{$('#events').innerHTML='<p class="err">'+esc(e.message)+'</p>'});loadEval();
+</script>
+</body>
+</html>

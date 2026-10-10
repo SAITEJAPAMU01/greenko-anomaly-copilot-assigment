@@ -1,0 +1,116 @@
+{
+  "note": "Synthetic fault-injection benchmark: labels are known by construction. Scores are optimistic vs. real plants (clean physics, Gaussian noise); use them to compare methods and probe sensitivity, not as production accuracy.",
+  "by_severity": [
+    {
+      "severity": 1.0,
+      "seeds": 8,
+      "days": 30,
+      "methods": {
+        "rules": {
+          "precision": 0.921,
+          "recall": 0.995,
+          "f1": 0.957,
+          "event_recall": 1.0,
+          "false_alarms_per_1000h": 1.59
+        },
+        "isolation_forest": {
+          "precision": 0.597,
+          "recall": 1.0,
+          "f1": 0.747,
+          "event_recall": 1.0,
+          "false_alarms_per_1000h": 12.56
+        },
+        "ensemble": {
+          "precision": 0.853,
+          "recall": 0.995,
+          "f1": 0.919,
+          "event_recall": 1.0,
+          "false_alarms_per_1000h": 3.18
+        }
+      },
+      "ensemble_event_recall_by_fault": {
+        "thermal_vib": 1.0,
+        "power_loss": 1.0,
+        "vibration_only": 1.0,
+        "overtemp_only": 1.0,
+        "drivetrain": 1.0
+      },
+      "diagnosis_family_accuracy": 1.0,
+      "diagnosis_n": 63
+    },
+    {
+      "severity": 0.6,
+      "seeds": 8,
+      "days": 30,
+      "methods": {
+        "rules": {
+          "precision": 0.919,
+          "recall": 0.967,
+          "f1": 0.942,
+          "event_recall": 1.0,
+          "false_alarms_per_1000h": 1.59
+        },
+        "isolation_forest": {
+          "precision": 0.594,
+          "recall": 0.995,
+          "f1": 0.744,
+          "event_recall": 1.0,
+          "false_alarms_per_1000h": 12.64
+        },
+        "ensemble": {
+          "precision": 0.833,
+          "recall": 0.995,
+          "f1": 0.907,
+          "event_recall": 1.0,
+          "false_alarms_per_1000h": 3.71
+        }
+      },
+      "ensemble_event_recall_by_fault": {
+        "thermal_vib": 1.0,
+        "power_loss": 1.0,
+        "vibration_only": 1.0,
+        "overtemp_only": 1.0,
+        "drivetrain": 1.0
+      },
+      "diagnosis_family_accuracy": 1.0,
+      "diagnosis_n": 63
+    },
+    {
+      "severity": 0.4,
+      "seeds": 8,
+      "days": 30,
+      "methods": {
+        "rules": {
+          "precision": 0.916,
+          "recall": 0.933,
+          "f1": 0.925,
+          "event_recall": 1.0,
+          "false_alarms_per_1000h": 1.59
+        },
+        "isolation_forest": {
+          "precision": 0.565,
+          "recall": 0.948,
+          "f1": 0.708,
+          "event_recall": 0.984,
+          "false_alarms_per_1000h": 13.53
+        },
+        "ensemble": {
+          "precision": 0.803,
+          "recall": 0.952,
+          "f1": 0.871,
+          "event_recall": 1.0,
+          "false_alarms_per_1000h": 4.33
+        }
+      },
+      "ensemble_event_recall_by_fault": {
+        "thermal_vib": 1.0,
+        "power_loss": 1.0,
+        "vibration_only": 1.0,
+        "overtemp_only": 1.0,
+        "drivetrain": 1.0
+      },
+      "diagnosis_family_accuracy": 1.0,
+      "diagnosis_n": 63
+    }
+  ]
+}
