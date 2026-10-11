@@ -1,157 +1,838 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Asset Anomaly Copilot</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greenko | Renewable Asset Anomaly Copilot</title>
+
 <style>
-:root{--bg:#f4f7f5;--card:#fff;--ink:#14231c;--mut:#5d6b64;--line:#e1e8e4;--brand:#12372a;--ok:#2f8f5b;
---watch:#b7860b;--warn:#d9731a;--crit:#c62f2f;--actual:#1d4ed8;--exp:#8b9a92;--flag:rgba(198,47,47,.14)}
-@media (prefers-color-scheme:dark){:root{--bg:#0e1512;--card:#16201b;--ink:#e6efe9;--mut:#93a39a;--line:#26342d;--brand:#0b2a1f;--actual:#6ea0ff;--exp:#6c7c73;--flag:rgba(255,99,99,.2)}}
-*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
-header{background:var(--brand);color:#fff;padding:22px 16px}header h1{margin:0;font-size:22px}header p{margin:4px 0 0;opacity:.8;font-size:14px}
-main{max-width:1180px;margin:0 auto;padding:16px}
-.grid{display:grid;gap:16px;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
-.card h2{margin:0 0 10px;font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}.kpi b{display:block;font-size:26px}.kpi span{color:var(--mut);font-size:13px}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit}
-.tab[aria-selected=true]{background:var(--brand);color:#fff;border-color:var(--brand)}
-.sev{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;color:#fff}
-.sev.critical{background:var(--crit)}.sev.warning{background:var(--warn)}.sev.watch{background:var(--watch)}.sev.healthy{background:var(--ok)}
-.chart h3{margin:10px 0 2px;font-size:14px}.chart svg{width:100%;height:auto;display:block}
-.legend{font-size:12px;color:var(--mut)}.legend i{display:inline-block;width:14px;height:3px;margin:0 4px 2px 10px;vertical-align:middle}
-.ev{border:1px solid var(--line);border-left:5px solid var(--crit);border-radius:10px;padding:12px;margin-bottom:12px}
-.ev.warning{border-left-color:var(--warn)}.ev.watch{border-left-color:var(--watch)}
-.ev p{margin:8px 0}.ev ol{margin:6px 0 0;padding-left:20px}.ev small{color:var(--mut)}
-.hyp{display:flex;align-items:center;gap:8px;font-size:13px;margin:3px 0}.bar{flex:0 0 90px;height:6px;background:var(--line);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--brand)}
-@media(prefers-color-scheme:dark){.bar i{background:#4aa87c}}
-button.act,label.act{background:var(--brand);color:#fff;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;font:inherit;display:inline-block}
-.chat{max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;white-space:pre-wrap;font-size:14px;background:var(--bg)}
-.chat .u{color:var(--actual);font-weight:600}.chat div{margin-bottom:8px}
-.row{display:flex;gap:8px}.row input{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:3px 10px;cursor:pointer;font-size:13px}
-table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:right;padding:4px 8px;border-bottom:1px solid var(--line)}th:first-child,td:first-child{text-align:left}
-.mut{color:var(--mut)}.err{color:var(--crit)}
+:root {
+  --green: #086b4c;
+  --green-light: #e7f5ed;
+  --bg: #f3f8f5;
+  --card: #ffffff;
+  --text: #173b2e;
+  --muted: #6b8177;
+  --border: #dfebe4;
+  --red: #dc3636;
+  --orange: #e68a19;
+  --blue: #2874d0;
+  --shadow: 0 5px 22px rgba(20, 70, 48, .06);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  background: linear-gradient(120deg, #064c37, #07845d);
+  color: white;
+  padding: 28px 5%;
+}
+
+header h1 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 32px);
+}
+
+header p {
+  margin: 8px 0 0;
+  color: #d6eee3;
+  font-size: 14px;
+}
+
+main {
+  max-width: 1600px;
+  margin: auto;
+  padding: 24px;
+}
+
+.section-title {
+  margin: 0 0 16px;
+  font-size: 17px;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.kpi {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: 4px solid #70c99f;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+
+.kpi:nth-child(3),
+.kpi:nth-child(4) {
+  border-top-color: var(--orange);
+}
+
+.kpi:nth-child(5) {
+  border-top-color: var(--red);
+}
+
+.kpi b {
+  display: block;
+  font-size: 27px;
+  margin-bottom: 7px;
+  overflow-wrap: anywhere;
+}
+
+.kpi span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+
+.card h2 {
+  font-size: 16px;
+  margin: 0 0 16px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.tab {
+  padding: 9px 15px;
+  border: 1px solid var(--border);
+  border-radius: 25px;
+  background: white;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.tab[aria-selected="true"] {
+  background: var(--green);
+  color: white;
+}
+
+.sev {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 20px;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.sev.critical { background: var(--red); }
+.sev.warning { background: var(--orange); }
+.sev.watch { background: #a88417; }
+.sev.healthy { background: #218553; }
+
+.chart h3 {
+  font-size: 14px;
+  margin: 22px 0 8px;
+}
+
+.chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.legend {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.legend i {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  margin: 0 5px 3px 10px;
+}
+
+.event {
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--red);
+  border-radius: 12px;
+  margin-bottom: 14px;
+  background: #fffafa;
+}
+
+.event.warning {
+  border-left-color: var(--orange);
+  background: #fffaf3;
+}
+
+.event.watch {
+  border-left-color: #a88417;
+}
+
+.event p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.event small {
+  color: var(--muted);
+}
+
+.event ol {
+  padding-left: 20px;
+  font-size: 13px;
+}
+
+.event li {
+  margin: 6px 0;
+}
+
+.hypothesis {
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+.bar {
+  display: inline-block;
+  width: 90px;
+  height: 7px;
+  background: #e6eee9;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-right: 8px;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  background: var(--green);
+}
+
+button.action,
+label.action {
+  display: inline-block;
+  border: none;
+  border-radius: 9px;
+  padding: 10px 15px;
+  background: var(--green);
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button.action:hover,
+label.action:hover {
+  background: #07533c;
+}
+
+.chat {
+  min-height: 70px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #f7faf8;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  white-space: pre-wrap;
+  font-size: 13px;
+}
+
+.chat div { margin-bottom: 10px; }
+.chat .user { color: var(--blue); font-weight: bold; }
+
+.row {
+  display: flex;
+  gap: 8px;
+}
+
+.row input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font: inherit;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.chips button {
+  border: 1px solid var(--border);
+  background: #f5faf7;
+  border-radius: 20px;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+th, td {
+  padding: 10px 7px;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: #edf7f1;
+  color: var(--green);
+}
+
+th:first-child, td:first-child {
+  text-align: left;
+}
+
+.table-wrap { overflow-x: auto; }
+
+.error { color: var(--red); }
+
+@media (max-width: 1150px) {
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  main { padding: 12px; }
+  header { padding: 22px 16px; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .kpi { padding: 12px; }
+  .kpi b { font-size: 22px; }
+  .card { padding: 14px; }
+  .row { flex-wrap: wrap; }
+}
 </style>
 </head>
+
 <body>
-<header><h1>Renewable Asset Anomaly Copilot</h1>
-<p>Flags abnormal solar / wind behaviour, explains it in operator language, and suggests what to check next.</p></header>
+<header>
+  <h1>Renewable Asset Fault &amp; Anomaly Detection Copilot</h1>
+  <p>Monitor &nbsp; • &nbsp; Detect &nbsp; • &nbsp; Explain &nbsp; • &nbsp; Keep renewable assets running</p>
+</header>
+
 <main>
   <div class="kpis" id="kpis"></div>
   <div class="tabs" id="tabs" role="tablist"></div>
+
   <div class="grid">
     <div>
-      <div class="card chart" id="charts"><h2>Telemetry vs expected behaviour</h2><p class="mut">Loading…</p></div>
-      <div class="card" id="evalcard"><h2>Validation (fault-injection benchmark)</h2><p class="mut">Loading…</p></div>
+      <div class="card chart" id="charts">
+        <h2>Asset Telemetry</h2>
+        <p class="muted">Loading telemetry...</p>
+      </div>
+
+      <div class="card" id="evalcard">
+        <h2>Validation (Fault-Injection Benchmark)</h2>
+        <p class="muted">Loading evaluation results...</p>
+      </div>
     </div>
+
     <div>
-      <div class="card"><h2>Detected events</h2><div id="events"><p class="mut">Loading…</p></div></div>
-      <div class="card"><h2>Ask the copilot</h2>
+      <div class="card">
+        <h2>Detected Events</h2>
+        <div id="events"><p class="muted">Loading events...</p></div>
+      </div>
+
+      <div class="card">
+        <h2>Ask the Copilot</h2>
         <div class="chips" id="chips"></div>
         <div class="chat" id="chat" aria-live="polite"></div>
-        <form class="row" id="askform"><input id="q" placeholder="e.g. why did the turbine alarm?" aria-label="Question"><button class="act">Ask</button></form>
+        <form class="row" id="askform">
+          <input id="q" placeholder="Why did the turbine alarm?" aria-label="Question">
+          <button class="action" type="submit">Ask</button>
+        </form>
       </div>
-      <div class="card"><h2>Analyse your own CSV</h2>
-        <p class="mut" style="margin-top:0">Same columns as the bundled data (timestamp_id, asset_id, hour, irradiance_wm2, wind_speed_ms, temperature_c, vibration_mm_s, power_mw). Nothing is stored.</p>
-        <label class="act">Choose file<input type="file" id="file" accept=".csv" hidden></label>
-        <button class="act" id="reset" style="display:none">Back to bundled data</button>
-        <div id="uperr" class="err"></div>
+
+      <div class="card">
+        <h2>Analyse Your Own CSV</h2>
+        <p class="muted">
+          Required columns: timestamp_id, asset_id, hour, irradiance_wm2,
+          wind_speed_ms, temperature_c, vibration_mm_s, power_mw.
+        </p>
+
+        <label class="action">
+          Choose CSV File
+          <input type="file" id="file" accept=".csv" hidden>
+        </label>
+
+        <button class="action" id="reset" type="button" style="display:none">
+          Back to Bundled Data
+        </button>
+
+        <p id="uperr" class="error"></p>
       </div>
     </div>
   </div>
 </main>
+
 <script>
-const $=s=>document.querySelector(s);
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let S={assets:{},events:[],series:{},cur:null,custom:false};
+const $ = selector => document.querySelector(selector);
 
-async function api(path,opt){const r=await fetch(path,opt);if(!r.ok){let m=r.statusText;try{m=(await r.json()).detail||m}catch(e){}throw new Error(m)}return r.json()}
+const esc = value => String(value).replace(/[&<>"']/g, char => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+}[char]));
 
-async function loadBundled(){
-  const o=await api('/api/overview');S.assets=o.assets;S.events=o.events;S.series={};S.custom=false;
-  S.cur=Object.keys(S.assets)[0];await ensureSeries(S.cur);render();
-}
-async function ensureSeries(a){if(!S.series[a]&&!S.custom)S.series[a]=(await api('/api/assets/'+encodeURIComponent(a))).series}
+let S = {
+  assets: {},
+  events: [],
+  series: {},
+  cur: null,
+  custom: false
+};
 
-function render(){
-  const ev=S.events,n=Object.keys(S.assets).length,crit=ev.filter(e=>e.severity==='critical').length;
-  const pts=Object.values(S.assets).reduce((a,x)=>a+x.flagged_points,0),rows=Object.values(S.assets).reduce((a,x)=>a+x.rows,0);
-  $('#kpis').innerHTML=[[n,'assets monitored'],[ev.length,'events detected'],[crit,'critical'],[(100*pts/rows).toFixed(1)+'%','hours flagged']]
-    .map(([b,s])=>`<div class="kpi"><b>${esc(b)}</b><span>${s}</span></div>`).join('');
-  $('#tabs').innerHTML=Object.entries(S.assets).map(([a,s])=>
-    `<button class="tab" role="tab" aria-selected="${a===S.cur}" data-a="${esc(a)}">${esc(a)} <span class="sev ${s.worst}">${s.worst}</span></button>`).join('');
-  document.querySelectorAll('.tab').forEach(b=>b.onclick=async()=>{S.cur=b.dataset.a;await ensureSeries(S.cur);render()});
-  drawCharts();drawEvents();
-}
+async function api(path, options) {
+  const response = await fetch(path, options);
 
-function chart(title,rows,series,opts){
-  const W=760,H=170,L=44,R=10,T=8,B=22,n=rows.length;
-  const all=series.flatMap(s=>rows.map(r=>r[s.k])).concat(opts.extra||[]);
-  let lo=Math.min(...all),hi=Math.max(...all);const pad=(hi-lo)*.08||1;lo-=pad;hi+=pad;
-  const x=i=>L+(W-L-R)*i/(n-1),y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
-  let g='';
-  // flagged shading
-  rows.forEach((r,i)=>{if(r.anomaly)g+=`<rect x="${x(i)-(W-L-R)/(n-1)/2}" y="${T}" width="${(W-L-R)/(n-1)}" height="${H-T-B}" fill="var(--flag)"/>`});
-  for(let k=0;k<=4;k++){const v=lo+(hi-lo)*k/4;g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" font-size="11" text-anchor="end" fill="var(--mut)">${v.toFixed(opts.d??1)}</text>`}
-  for(let d=0;d*24<n;d++){const i=d*24;g+=`<line x1="${x(i)}" x2="${x(i)}" y1="${T}" y2="${H-B}" stroke="var(--line)" stroke-dasharray="3 3"/><text x="${x(i)+3}" y="${H-6}" font-size="11" fill="var(--mut)">Day ${d+1}</text>`}
-  if(opts.thr!=null)g+=`<line x1="${L}" x2="${W-R}" y1="${y(opts.thr)}" y2="${y(opts.thr)}" stroke="var(--crit)" stroke-dasharray="5 4"/><text x="${W-R}" y="${y(opts.thr)-4}" font-size="11" text-anchor="end" fill="var(--crit)">${esc(opts.thrLabel)}</text>`;
-  series.forEach(s=>{g+=`<polyline fill="none" stroke="${s.c}" stroke-width="${s.w||2}" ${s.dash?'stroke-dasharray="5 4"':''} points="${rows.map((r,i)=>x(i)+','+y(r[s.k])).join(' ')}"/>`});
-  rows.forEach((r,i)=>{if(r.anomaly)g+=`<circle cx="${x(i)}" cy="${y(r[series[0].k])}" r="4" fill="var(--crit)"><title>Day ${Math.floor(i/24)+1} ${String(r.hour).padStart(2,'0')}:00 - ${esc(opts.unit)} ${r[series[0].k]}</title></circle>`});
-  const lg=series.map(s=>`<i style="background:${s.c}"></i>${esc(s.n)}`).join('');
-  return `<h3>${esc(title)}</h3><div class="legend">${lg}<i style="background:var(--crit)"></i>flagged hour</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}">${g}</svg>`;
-}
-function drawCharts(){
-  const rows=S.series[S.cur];if(!rows)return;
-  $('#charts').innerHTML='<h2>Telemetry vs expected behaviour</h2>'+
-    chart('Power (MW): actual vs expected from irradiance / wind speed',rows,[{k:'power_mw',n:'actual',c:'var(--actual)'},{k:'expected_power_mw',n:'expected',c:'var(--exp)',dash:1,w:1.6}],{d:2,unit:'MW'})+
-    chart('Temperature (°C): actual vs normal for that hour of day',rows,[{k:'temperature_c',n:'actual',c:'var(--actual)'},{k:'expected_temp_c',n:'expected',c:'var(--exp)',dash:1,w:1.6}],{unit:'°C'})+
-    chart('Vibration (mm/s)',rows,[{k:'vibration_mm_s',n:'actual',c:'var(--actual)'}],{unit:'mm/s',thr:2.5,thrLabel:'warning 2.5 mm/s',extra:[2.5]});
-}
-function drawEvents(){
-  const evs=S.events;
-  if(!evs.length){$('#events').innerHTML='<p>No anomalies detected. All assets look healthy.</p>';return}
-  $('#events').innerHTML=evs.map(e=>`<div class="ev ${e.severity}">
-    <b>${esc(e.event_id)}</b> <span class="sev ${e.severity}">${e.severity}</span>
-    <small> · Day ${e.day}, ${String(e.start_hour).padStart(2,'0')}:00 · ${e.duration_h} h · peak z=${e.peak_abs_z}</small>
-    <p>${esc(e.explanation)}</p>
-    <b>Likely causes (ranked)</b>
-    ${e.hypotheses.map(h=>`<div class="hyp"><div class="bar"><i style="width:${h.match*100}%"></i></div><span>${esc(h.title)} <small>${Math.round(h.match*100)}%</small></span></div>`).join('')}
-    <p style="margin-bottom:2px"><b>Recommended next checks</b></p><ol>${e.recommended_checks.map(c=>`<li>${esc(c)}</li>`).join('')}</ol>
-    <small>Detected by: ${[e.detectors.rules&&'statistical rules',e.detectors.isolation_forest&&'IsolationForest'].filter(Boolean).join(' + ')}</small></div>`).join('');
+  if (!response.ok) {
+    let message = response.statusText;
+    try {
+      message = (await response.json()).detail || message;
+    } catch (_) {}
+    throw new Error(message);
+  }
+
+  return response.json();
 }
 
-// ---------- copilot ----------
-const chips=['Give me a status summary','Why did the turbine alarm?','What should I check first?','Anything wrong with the solar inverter?'];
-$('#chips').innerHTML=chips.map(c=>`<button type="button">${esc(c)}</button>`).join('');
-document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>{$('#q').value=b.textContent;$('#askform').requestSubmit()});
-function say(cls,t){const d=document.createElement('div');if(cls)d.className=cls;d.textContent=t;$('#chat').append(d);$('#chat').scrollTop=1e9}
-$('#askform').onsubmit=async ev=>{ev.preventDefault();const t=$('#q').value.trim();if(!t)return;$('#q').value='';say('u','You: '+t);
-  if(S.custom){say('','Copilot Q&A is available for the bundled data only; the event cards on the right cover your upload.');return}
-  try{const r=await api('/api/ask',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text:t})});say('',r.answer)}catch(e){say('err',e.message)}};
+async function loadBundled() {
+  const data = await api('/api/overview');
 
-// ---------- upload ----------
-$('#file').onchange=async e=>{const f=e.target.files[0];if(!f)return;$('#uperr').textContent='';
-  const fd=new FormData();fd.append('file',f);
-  try{const r=await api('/api/analyze',{method:'POST',body:fd});S.assets=r.assets;S.events=r.events;S.series=r.series;S.custom=true;S.cur=Object.keys(r.assets)[0];$('#reset').style.display='inline-block';render()}
-  catch(err){$('#uperr').textContent=err.message}e.target.value=''};
-$('#reset').onclick=()=>{$('#reset').style.display='none';loadBundled()};
+  S.assets = data.assets;
+  S.events = data.events;
+  S.series = {};
+  S.custom = false;
 
-// ---------- evaluation ----------
-async function loadEval(){
-  try{const r=await api('/api/evaluation');
-    const b=r.by_severity.map(x=>{const m=x.methods;const row=k=>`<td>${m[k].precision.toFixed(2)}</td><td>${m[k].recall.toFixed(2)}</td><td>${m[k].f1.toFixed(2)}</td><td>${m[k].false_alarms_per_1000h}</td>`;
-      return `<tr><td colspan="5"><b>Fault severity ${x.severity}</b> <span class="mut">(1.0 = size of the bundled-data faults)</span></td></tr>`+
-      ['rules','isolation_forest','ensemble'].map(k=>`<tr><td>${k.replace('_',' ')}</td>${row(k)}</tr>`).join('')}).join('');
-    $('#evalcard').innerHTML=`<h2>Validation (fault-injection benchmark)</h2><p class="mut" style="margin-top:0">${esc(r.note)}</p>
-    <table><tr><th>method</th><th>precision</th><th>recall</th><th>F1</th><th>false alarms / 1000 h</th></tr>${b}</table>`;
-  }catch(e){$('#evalcard').innerHTML='<h2>Validation</h2><p class="mut">Run <code>python -m backend.evaluation</code> to generate results.</p>'}
+  S.cur = Object.keys(S.assets)[0];
+
+  if (S.cur) {
+    await ensureSeries(S.cur);
+  }
+
+  $('#reset').style.display = 'none';
+  render();
 }
-loadBundled().catch(e=>{$('#events').innerHTML='<p class="err">'+esc(e.message)+'</p>'});loadEval();
+
+async function ensureSeries(asset) {
+  if (!S.series[asset] && !S.custom) {
+    const data = await api('/api/assets/' + encodeURIComponent(asset));
+    S.series[asset] = data.series;
+  }
+}
+
+function render() {
+  const assets = Object.values(S.assets);
+  const events = S.events;
+
+  const assetCount = assets.length;
+  const totalRows = assets.reduce((sum, asset) => sum + asset.rows, 0);
+  const flagged = assets.reduce((sum, asset) => sum + asset.flagged_points, 0);
+  const critical = events.filter(event => event.severity === 'critical').length;
+  const warning = events.filter(event => event.severity === 'warning').length;
+  const flaggedPercent = totalRows
+    ? (100 * flagged / totalRows).toFixed(1) + '%'
+    : '0%';
+
+  const metrics = [
+    [assetCount, 'Assets monitored'],
+    [totalRows.toLocaleString(), 'Readings analysed'],
+    [flagged.toLocaleString(), 'Flagged readings'],
+    [events.length, 'Events detected'],
+    [critical, 'Critical events'],
+    [flaggedPercent, 'Readings flagged']
+  ];
+
+  $('#kpis').innerHTML = metrics.map(([value, label]) =>
+    `<div class="kpi"><b>${esc(value)}</b><span>${esc(label)}</span></div>`
+  ).join('');
+
+  $('#tabs').innerHTML = Object.entries(S.assets).map(([asset, data]) =>
+    `<button class="tab" role="tab"
+      aria-selected="${asset === S.cur}"
+      data-a="${esc(asset)}">
+      ${esc(asset)} <span class="sev ${esc(data.worst)}">${esc(data.worst)}</span>
+    </button>`
+  ).join('');
+
+  document.querySelectorAll('.tab').forEach(button => {
+    button.onclick = async () => {
+      S.cur = button.dataset.a;
+      await ensureSeries(S.cur);
+      render();
+    };
+  });
+
+  drawCharts();
+  drawEvents();
+}
+
+function chart(title, rows, series, options) {
+  if (!rows || rows.length === 0) {
+    return `<h3>${esc(title)}</h3><p class="muted">No telemetry data available.</p>`;
+  }
+
+  const W = 760, H = 180, L = 48, R = 12, T = 12, B = 25;
+  const n = rows.length;
+
+  const values = series.flatMap(item =>
+    rows.map(row => Number(row[item.k])).filter(Number.isFinite)
+  ).concat(options.extra || []);
+
+  if (!values.length) {
+    return `<h3>${esc(title)}</h3><p class="muted">No numeric data available.</p>`;
+  }
+
+  let low = Math.min(...values);
+  let high = Math.max(...values);
+
+  const padding = (high - low) * 0.1 || 1;
+  low -= padding;
+  high += padding;
+
+  const x = index => L + (W - L - R) * index / Math.max(n - 1, 1);
+  const y = value => T + (H - T - B) * (1 - (value - low) / (high - low));
+
+  let drawing = '';
+
+  rows.forEach((row, index) => {
+    if (row.anomaly) {
+      const width = (W - L - R) / Math.max(n - 1, 1);
+      drawing += `<rect x="${x(index) - width / 2}" y="${T}"
+        width="${width}" height="${H - T - B}" fill="rgba(220,54,54,.10)"/>`;
+    }
+  });
+
+  for (let tick = 0; tick <= 4; tick++) {
+    const value = low + (high - low) * tick / 4;
+
+    drawing += `<line x1="${L}" x2="${W - R}"
+      y1="${y(value)}" y2="${y(value)}" stroke="#dfebe4"/>`;
+
+    drawing += `<text x="${L - 7}" y="${y(value) + 4}"
+      text-anchor="end" font-size="11" fill="#6b8177">
+      ${value.toFixed(options.d ?? 1)}</text>`;
+  }
+
+  for (let day = 0; day * 24 < n; day++) {
+    const index = day * 24;
+
+    drawing += `<text x="${x(index) + 3}" y="${H - 5}"
+      font-size="11" fill="#6b8177">Day ${day + 1}</text>`;
+  }
+
+  if (options.thr != null) {
+    drawing += `<line x1="${L}" x2="${W - R}"
+      y1="${y(options.thr)}" y2="${y(options.thr)}"
+      stroke="#dc3636" stroke-dasharray="5 4"/>`;
+
+    drawing += `<text x="${W - R}" y="${y(options.thr) - 5}"
+      text-anchor="end" font-size="11" fill="#dc3636">
+      ${esc(options.thrLabel)}</text>`;
+  }
+
+  series.forEach(item => {
+    const points = rows.map((row, index) => {
+      const value = Number(row[item.k]);
+      return Number.isFinite(value) ? `${x(index)},${y(value)}` : '';
+    }).filter(Boolean).join(' ');
+
+    drawing += `<polyline fill="none" stroke="${item.c}"
+      stroke-width="${item.w || 2}"
+      ${item.dash ? 'stroke-dasharray="5 4"' : ''}
+      points="${points}"/>`;
+  });
+
+  rows.forEach((row, index) => {
+    if (row.anomaly && Number.isFinite(Number(row[series[0].k]))) {
+      drawing += `<circle cx="${x(index)}"
+        cy="${y(Number(row[series[0].k]))}"
+        r="4" fill="#dc3636">
+        <title>Detected anomaly at hour ${esc(row.hour)}</title>
+      </circle>`;
+    }
+  });
+
+  const legend = series.map(item =>
+    `<i style="background:${item.c}"></i>${esc(item.n)}`
+  ).join('');
+
+  return `
+    <h3>${esc(title)}</h3>
+    <div class="legend">${legend}
+      <i style="background:#dc3636"></i>Flagged hour
+    </div>
+    <svg viewBox="0 0 ${W} ${H}" role="img"
+      aria-label="${esc(title)}">${drawing}</svg>`;
+}
+
+function drawCharts() {
+  const rows = S.series[S.cur];
+  if (!rows) return;
+
+  $('#charts').innerHTML = `
+    <h2>Telemetry vs Expected Behaviour</h2>
+    <p class="muted">Compare measured values with expected operating behaviour.</p>
+    ${chart('Power (MW): Actual vs Expected', rows, [
+      {k: 'power_mw', n: 'Actual', c: '#2874d0'},
+      {k: 'expected_power_mw', n: 'Expected', c: '#91a59a', dash: true}
+    ], {d: 2, unit: 'MW'})}
+    ${chart('Temperature (°C): Actual vs Expected', rows, [
+      {k: 'temperature_c', n: 'Actual', c: '#2874d0'},
+      {k: 'expected_temp_c', n: 'Expected', c: '#91a59a', dash: true}
+    ], {unit: '°C'})}
+    ${chart('Vibration (mm/s)', rows, [
+      {k: 'vibration_mm_s', n: 'Vibration', c: '#078a78'}
+    ], {unit: 'mm/s', thr: 2.5, thrLabel: 'Warning: 2.5 mm/s', extra: [2.5]})}
+  `;
+}
+
+function drawEvents() {
+  const events = S.events;
+
+  if (!events.length) {
+    $('#events').innerHTML =
+      '<p>No anomalies detected. All assets look healthy.</p>';
+    return;
+  }
+
+  $('#events').innerHTML = events.map(event => `
+    <div class="event ${esc(event.severity)}">
+      <b>${esc(event.event_id)}</b>
+      <span class="sev ${esc(event.severity)}">${esc(event.severity)}</span>
+
+      <p class="muted">
+        Day ${esc(event.day)},
+        ${String(event.start_hour).padStart(2, '0')}:00
+        · Duration: ${esc(event.duration_h)} hours
+        · Peak z-score: ${esc(event.peak_abs_z)}
+      </p>
+
+      <p>${esc(event.explanation)}</p>
+
+      <b>Likely causes</b>
+
+      ${event.hypotheses.map(hypothesis => `
+        <div class="hypothesis">
+          <div class="bar"><i style="width:${Math.max(0, Math.min(100, Number(hypothesis.match) * 100))}%"></i></div>
+          ${esc(hypothesis.title)}
+          <b>${Math.round(Number(hypothesis.match) * 100)}%</b>
+        </div>
+      `).join('')}
+
+      <p><b>Recommended next checks</b></p>
+      <ol>
+        ${event.recommended_checks.map(check => `<li>${esc(check)}</li>`).join('')}
+      </ol>
+
+      <small>Detected by:
+        ${[
+          event.detectors.rules && 'Statistical rules',
+          event.detectors.isolation_forest && 'Isolation Forest'
+        ].filter(Boolean).map(esc).join(' + ')}
+      </small>
+    </div>
+  `).join('');
+}
+
+// Copilot questions
+const suggestions = [
+  'Give me a status summary',
+  'Why did the turbine alarm?',
+  'What should I check first?',
+  'Anything wrong with the solar inverter?'
+];
+
+$('#chips').innerHTML = suggestions.map(question =>
+  `<button type="button">${esc(question)}</button>`
+).join('');
+
+document.querySelectorAll('#chips button').forEach(button => {
+  button.onclick = () => {
+    $('#q').value = button.textContent;
+    $('#askform').requestSubmit();
+  };
+});
+
+function say(className, text) {
+  const message = document.createElement('div');
+  if (className) message.className = className;
+  message.textContent = text;
+  $('#chat').appendChild(message);
+  $('#chat').scrollTop = $('#chat').scrollHeight;
+}
+
+$('#askform').onsubmit = async event => {
+  event.preventDefault();
+
+  const question = $('#q').value.trim();
+  if (!question) return;
+
+  $('#q').value = '';
+  say('user', 'You: ' + question);
+
+  if (S.custom) {
+    say('', 'Copilot Q&A is available for bundled data only. See the event cards for your uploaded CSV.');
+    return;
+  }
+
+  try {
+    const response = await api('/api/ask', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text: question})
+    });
+
+    say('', response.answer);
+  } catch (error) {
+    say('error', error.message);
+  }
+};
+
+// CSV upload
+$('#file').onchange = async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  $('#uperr').textContent = '';
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const result = await api('/api/analyze', {
+      method: 'POST',
+      body: formData
+    });
+
+    S.assets = result.assets;
+    S.events = result.events;
+    S.series = result.series;
+    S.custom = true;
+    S.cur = Object.keys(result.assets)[0];
+
+    $('#reset').style.display = 'inline-block';
+    render();
+  } catch (error) {
+    $('#uperr').textContent = error.message;
+  }
+
+  event.target.value = '';
+};
+
+$('#reset').onclick = () => loadBundled().catch(error => {
+  $('#uperr').textContent = error.message;
+});
+
+// Validation benchmark
+async function loadEval() {
+  try {
+    const result = await api('/api/evaluation');
+
+    const rows = result.by_severity.map(group => {
+      const methods = group.methods;
+
+      const methodRows = ['rules', 'isolation_forest', 'ensemble'].map(method => {
+        const metrics = methods[method];
+
+        return `
+          <tr>
+            <td>${esc(method.replace('_', ' '))}</td>
+            <td>${Number(metrics.precision).toFixed(2)}</td>
+            <td>${Number(metrics.recall).toFixed(2)}</td>
+            <td>${Number(metrics.f1).toFixed(2)}</td>
+            <td>${esc(metrics.false_alarms_per_1000h)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      return `
+        <tr>
+          <td colspan="5">
+            <b>Fault severity ${esc(group.severity)}</b>
+          </td>
+        </tr>
+        ${methodRows}
+      `;
+    }).join('');
+
+    $('#evalcard').innerHTML = `
+      <h2>Validation (Fault-Injection Benchmark)</h2>
+      <p class="muted">${esc(result.note)}</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Precision</th>
+              <th>Recall</th>
+              <th>F1 Score</th>
+              <th>False Alarms / 1000 h</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  } catch (error) {
+    $('#evalcard').innerHTML = `
+      <h2>Validation (Fault-Injection Benchmark)</h2>
+      <p class="muted">
+        Evaluation results could not be loaded.
+        Check that the backend is running and that /api/evaluation is available.
+      </p>
+    `;
+  }
+}
+
+// Start application
+loadBundled().catch(error => {
+  $('#events').innerHTML =
+    '<p class="error">Could not load dashboard: ' + esc(error.message) + '</p>';
+});
+
+loadEval();
 </script>
 </body>
 </html>
